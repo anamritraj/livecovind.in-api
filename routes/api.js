@@ -13,6 +13,11 @@ let tested = {
   tested: []
 };
 
+let ageBracketsData = {};
+let hospitalized = {};
+let gender = {};
+let nationality = {};
+
 const stateCodeAndNameMap = {
   Totol: "total",
   Maharashtra: "mh",
@@ -143,9 +148,114 @@ const fetchLiveBlogDataFromSource = index => {
       console.log("There was an error in the API");
     });
 };
-setInterval(fetchStateWiseDataFromSource, 1000 * 60 * 5);
+
+const extractPatientsStats = raw_data => {
+  let ageBracketsNew = {
+    "0-7": 0,
+    "8-17": 0,
+    "18-30": 0,
+    "31-45": 0,
+    "46-60": 0,
+    "61-80": 0,
+    ">80": 0,
+    unknown: 0
+  };
+
+  let hospitalizedNew = {};
+  let genderNew = {};
+  let nationalityNew = {};
+  raw_data.map(patient => {
+    // Agebracket
+    if (
+      parseInt(patient.agebracket) >= 0 &&
+      parseInt(patient.agebracket) <= 7
+    ) {
+      ageBracketsNew["0-7"]++;
+    } else if (
+      parseInt(patient.agebracket) >= 8 &&
+      parseInt(patient.agebracket) <= 17
+    ) {
+      ageBracketsNew["8-17"]++;
+    } else if (
+      parseInt(patient.agebracket) >= 18 &&
+      parseInt(patient.agebracket) <= 30
+    ) {
+      ageBracketsNew["18-30"]++;
+    } else if (
+      parseInt(patient.agebracket) >= 31 &&
+      parseInt(patient.agebracket) <= 45
+    ) {
+      ageBracketsNew["31-45"]++;
+    } else if (
+      parseInt(patient.agebracket) >= 46 &&
+      parseInt(patient.agebracket) <= 60
+    ) {
+      ageBracketsNew["46-60"]++;
+    } else if (
+      parseInt(patient.agebracket) >= 61 &&
+      parseInt(patient.agebracket) <= 80
+    ) {
+      ageBracketsNew["61-80"]++;
+    } else if (parseInt(patient.agebracket) > 80) {
+      ageBracketsNew[">80"]++;
+    } else ageBracketsNew["unknown"]++;
+
+    // Gender
+    if (patient.gender == "") {
+      if (!genderNew["unknown"]) genderNew["unknown"] = 0;
+      genderNew["unknown"]++;
+    } else {
+      if (!genderNew[patient.gender]) genderNew[patient.gender] = 0;
+      genderNew[patient.gender]++;
+    }
+
+    // currentStatus
+    if (patient.currentstatus === "") {
+      hospitalizedNew["unknown"] = 0;
+      hospitalizedNew["unknown"]++;
+    } else {
+      if (!hospitalizedNew[patient.currentstatus])
+        hospitalizedNew[patient.currentstatus] = 0;
+      hospitalizedNew[patient.currentstatus]++;
+    }
+
+    // Nationality
+    if (patient.nationality === "India") {
+      if (!nationalityNew["indian"]) nationalityNew["indian"] = 0;
+      nationalityNew["indian"]++;
+    } else if (patient.nationality === "") {
+      if (!nationalityNew["unknown"]) nationalityNew["unknown"] = 0;
+      nationalityNew["unknown"]++;
+    } else {
+      if (!nationalityNew["foreign"]) nationalityNew["foreign"] = 0;
+      nationalityNew["foreign"]++;
+    }
+  });
+  ageBracketsData = ageBracketsNew;
+  gender = genderNew;
+  hospitalized = hospitalizedNew;
+  nationality = nationalityNew;
+};
+
 // fetchLiveBlogDataFromSource(0);
+
+const fetchRawDataFromSource = () => {
+  axios
+    .get("https://api.covid19india.org/raw_data.json")
+    .then(result => {
+      if (result.status === 200) {
+        extractPatientsStats(result.data.raw_data);
+      }
+    })
+    .catch(err => {
+      console.log(err);
+    });
+};
+
+fetchRawDataFromSource();
 fetchStateWiseDataFromSource();
+setInterval(fetchStateWiseDataFromSource, 1000 * 60 * 5);
+setInterval(fetchRawDataFromSource, 1000 * 60 * 7);
 
 router.get("/state", function(req, res, next) {
   res.json(currentData);
@@ -153,6 +263,15 @@ router.get("/state", function(req, res, next) {
 
 router.get("/tested", function(req, res, next) {
   res.json(tested);
+});
+
+router.get("/stats", function(req, res, next) {
+  res.json({
+    hospitalizationStatus: hospitalized,
+    ageBrackets: ageBracketsData,
+    gender: gender,
+    nationality: nationality
+  });
 });
 
 module.exports = router;
