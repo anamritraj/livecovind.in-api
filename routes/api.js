@@ -1,7 +1,7 @@
 var express = require("express");
 var router = express.Router();
 const axios = require("axios");
-
+const mohfwService = require("../services/mohfw");
 let currentData = {
   total: {},
   statewise: {},
@@ -164,6 +164,7 @@ const extractPatientsStats = raw_data => {
   let hospitalizedNew = {};
   let genderNew = {};
   let nationalityNew = {};
+
   raw_data.map(patient => {
     // Agebracket
     if (
@@ -220,26 +221,40 @@ const extractPatientsStats = raw_data => {
     }
 
     // Nationality
-    if (patient.nationality === "India") {
-      if (!nationalityNew["indian"]) nationalityNew["indian"] = 0;
-      nationalityNew["indian"]++;
-    } else if (patient.nationality === "") {
-      if (!nationalityNew["unknown"]) nationalityNew["unknown"] = 0;
-      nationalityNew["unknown"]++;
-    } else {
-      if (!nationalityNew["foreign"]) nationalityNew["foreign"] = 0;
-      nationalityNew["foreign"]++;
-    }
+
+    // if (patient.nationality === "India") {
+    //   if (!nationalityNew["indian"]) nationalityNew["indian"] = 0;
+    //   nationalityNew["indian"]++;
+    // } else if (patient.nationality === "") {
+    //   if (!nationalityNew["unknown"]) nationalityNew["unknown"] = 0;
+    //   nationalityNew["unknown"]++;
+    // } else {
+    //   if (!nationalityNew["foreign"]) nationalityNew["foreign"] = 0;
+    //   nationalityNew["foreign"]++;
+    // }
   });
-  ageBracketsData = ageBracketsNew;
-  gender = genderNew;
-  hospitalized = hospitalizedNew;
-  nationality = nationalityNew;
+
+  mohfwService().then(({ totals }) => {
+    // MOHFW data
+    const indians = totals.cases_domestic;
+    const foreign = totals.cases_international;
+
+    // Details awaited for (total - indian - foreign)
+    nationalityNew["indian"] = indians;
+    nationalityNew["foreign"] = foreign;
+    nationalityNew["unknown"] = raw_data.length - indians - foreign;
+
+    ageBracketsData = ageBracketsNew;
+    gender = genderNew;
+    hospitalized = hospitalizedNew;
+    nationality = nationalityNew;
+  });
 };
 
 // fetchLiveBlogDataFromSource(0);
 
 const fetchRawDataFromSource = () => {
+  console.log("Fetching Raw data from source");
   axios
     .get("https://api.covid19india.org/raw_data.json")
     .then(result => {
@@ -254,8 +269,8 @@ const fetchRawDataFromSource = () => {
 
 fetchRawDataFromSource();
 fetchStateWiseDataFromSource();
-setInterval(fetchStateWiseDataFromSource, 1000 * 60 * 5);
-setInterval(fetchRawDataFromSource, 1000 * 60 * 7);
+setInterval(fetchStateWiseDataFromSource, 1000 * 60 * 2);
+setInterval(fetchRawDataFromSource, 1000 * 60 * 3);
 
 router.get("/state", function(req, res, next) {
   res.json(currentData);
