@@ -110,8 +110,16 @@ const fetchStateWiseDataFromSource = () => {
           deceased: data.key_values[0].deceaseddelta,
           recovered: data.key_values[0].recovereddelta
         };
-        const previousTested =
-          data.tested[data.tested.length - 3].totalsamplestested;
+        let previousTested =
+          data.tested[data.tested.length - 3].totalsamplestested || 0;
+
+        // Very bad hack for now.
+        let i = 4;
+        while (previousTested == 0) {
+          previousTested =
+            data.tested[data.tested.length - i].totalsamplestested || 0;
+          i++;
+        }
         const currentTested =
           data.tested[data.tested.length - 1].totalsamplestested;
         currentDataNew.tested = data.tested[data.tested.length - 1];
