@@ -1,6 +1,7 @@
 var express = require("express");
 var router = express.Router();
 const axios = require("axios");
+const moment = require("moment");
 const mohfwService = require("../services/mohfw");
 let currentData = {
   total: {},
@@ -12,6 +13,8 @@ let currentData = {
 let tested = {
   tested: []
 };
+
+let indiaTimeSeries = [];
 
 let ageBracketsData = {};
 let hospitalized = {};
@@ -68,6 +71,7 @@ const fetchStateWiseDataFromSource = () => {
       if (result.status === 200) {
         let data = result.data;
         const stateData = data.statewise;
+        let casesTimeSeries = data.cases_time_series;
         let max = 0;
         let min = Infinity;
         let currentDataNew = {
@@ -110,24 +114,42 @@ const fetchStateWiseDataFromSource = () => {
           deceased: data.key_values[0].deceaseddelta,
           recovered: data.key_values[0].recovereddelta
         };
-        let previousTested =
-          data.tested[data.tested.length - 3].totalsamplestested || 0;
 
-        // Very bad hack for now.
-        let i = 4;
+        // Very bad hack for now. Very very bad!
+        let currentTested =
+          data.tested[data.tested.length - 1].totalsamplestested || 0;
+
+        let i = 2;
+        while (currentTested == 0) {
+          currentTested =
+            data.tested[data.tested.length - i].totalsamplestested || 0;
+          i++;
+        }
+
+        let currentTestedIndex = i;
+        let previousTested =
+          data.tested[data.tested.length - (i + 1)].totalsamplestested || 0;
+
         while (previousTested == 0) {
           previousTested =
             data.tested[data.tested.length - i].totalsamplestested || 0;
           i++;
         }
-        const currentTested =
-          data.tested[data.tested.length - 1].totalsamplestested;
-        currentDataNew.tested = data.tested[data.tested.length - 1];
+        currentDataNew.tested =
+          data.tested[data.tested.length - (currentTestedIndex - 1)];
         currentDataNew.tested.delta = currentTested - previousTested;
         currentData = currentDataNew;
 
         // Assign Tested
         tested = data.tested;
+
+        // Assign India timeseries data
+        casesTimeSeries = casesTimeSeries.map(point => ({
+          ...point,
+          date: moment(point.date + "2020", "DD MMMM YYYY").format("YYYY-MM-DD")
+        }));
+
+        indiaTimeSeries = casesTimeSeries;
       } else {
         console.log("There was an error in the backend api");
       }
@@ -259,8 +281,6 @@ const extractPatientsStats = raw_data => {
   });
 };
 
-// fetchLiveBlogDataFromSource(0);
-
 const fetchRawDataFromSource = () => {
   console.log("Fetching Raw data from source");
   axios
@@ -277,11 +297,15 @@ const fetchRawDataFromSource = () => {
 
 fetchRawDataFromSource();
 fetchStateWiseDataFromSource();
-setInterval(fetchStateWiseDataFromSource, 1000 * 60 * 2);
-setInterval(fetchRawDataFromSource, 1000 * 60 * 3);
+setInterval(fetchStateWiseDataFromSource, 1000 * 60 * 10);
+// setInterval(fetchRawDataFromSource, 1000 * 60 * 15);
 
 router.get("/state", function(req, res, next) {
   res.json(currentData);
+});
+
+router.get("/india/timeseries", function(req, res, next) {
+  res.json(indiaTimeSeries);
 });
 
 router.get("/tested", function(req, res, next) {
