@@ -298,7 +298,7 @@ const fetchRawDataFromSource = () => {
 fetchRawDataFromSource();
 fetchStateWiseDataFromSource();
 setInterval(fetchStateWiseDataFromSource, 1000 * 60 * 10);
-// setInterval(fetchRawDataFromSource, 1000 * 60 * 15);
+setInterval(fetchRawDataFromSource, 1000 * 60 * 15);
 
 router.get("/state", function(req, res, next) {
   res.json(currentData);
