@@ -21,6 +21,7 @@ let hospitalized = {};
 let gender = {};
 let nationality = {};
 
+let stateDistrictData = {};
 const stateCodeAndNameMap = {
   Totol: "total",
   Maharashtra: "mh",
@@ -59,7 +60,8 @@ const stateCodeAndNameMap = {
   Sikkim: "sk",
   "Dadra and Nagar Haveli": "dn",
   "Daman and Diu": "dd",
-  Lakshadweep: "ld"
+  Lakshadweep: "ld",
+  Unknown: "unknown"
 };
 
 const fetchStateWiseDataFromSource = () => {
@@ -98,6 +100,7 @@ const fetchStateWiseDataFromSource = () => {
               active: state.active,
               confirmed: state.confirmed,
               deaths: state.deaths,
+              delta: state.delta,
               recovered: state.recovered || 0
             };
             max =
@@ -295,13 +298,46 @@ const fetchRawDataFromSource = () => {
     });
 };
 
+const fetchDistrictWiseData = () => {
+  axios
+    .get("https://api.covid19india.org/state_district_wise.json")
+    .then(response => {
+      if (response.status === 200) {
+        let stateDistrictDataNew = {};
+        // Assign each state to a code and send its data
+        Object.keys(response.data).forEach(key => {
+          Object.keys(response.data[key].districtData).forEach(districtName => {
+            delete response.data[key].districtData[districtName][
+              "lastupdatedtime"
+            ];
+            response.data[key].districtData[districtName].confirmedDelta = 0;
+          });
+          stateDistrictDataNew[stateCodeAndNameMap[key]] = {};
+          stateDistrictDataNew[stateCodeAndNameMap[key]].name = key;
+          stateDistrictDataNew[stateCodeAndNameMap[key]].districts =
+            response.data[key].districtData;
+        });
+        stateDistrictData = stateDistrictDataNew;
+      } else {
+        console.log(
+          "There was an error in the backend API for district-wise data"
+        );
+      }
+    });
+};
+
 fetchRawDataFromSource();
 fetchStateWiseDataFromSource();
-setInterval(fetchStateWiseDataFromSource, 1000 * 60 * 10);
-setInterval(fetchRawDataFromSource, 1000 * 60 * 15);
+fetchDistrictWiseData();
+// setInterval(fetchStateWiseDataFromSource, 1000 * 60 * 10);
+// setInterval(fetchRawDataFromSource, 1000 * 60 * 15);
 
 router.get("/state", function(req, res, next) {
   res.json(currentData);
+});
+
+router.get("/district", function(req, res, next) {
+  res.json(stateDistrictData);
 });
 
 router.get("/india/timeseries", function(req, res, next) {
