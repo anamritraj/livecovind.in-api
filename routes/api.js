@@ -329,8 +329,10 @@ const fetchDistrictWiseData = () => {
 fetchRawDataFromSource();
 fetchStateWiseDataFromSource();
 fetchDistrictWiseData();
-// setInterval(fetchStateWiseDataFromSource, 1000 * 60 * 10);
-// setInterval(fetchRawDataFromSource, 1000 * 60 * 15);
+
+setInterval(fetchStateWiseDataFromSource, 1000 * 60 * 4);
+setInterval(fetchRawDataFromSource, 1000 * 60 * 7);
+setInterval(fetchDistrictWiseData, 1000 * 60 * 3);
 
 router.get("/state", function(req, res, next) {
   res.json(currentData);
