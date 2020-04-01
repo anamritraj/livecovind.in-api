@@ -2,6 +2,7 @@ var express = require("express");
 var router = express.Router();
 const axios = require("axios");
 const moment = require("moment");
+const momenttz = require("moment-timezone");
 const mohfwService = require("../services/mohfw");
 let currentData = {
   total: {},
@@ -91,9 +92,11 @@ const fetchStateWiseDataFromSource = () => {
               confirmed: state.confirmed,
               deaths: state.deaths,
               recovered: state.recovered || 0,
-              lastUpdated: moment(state.lastupdatedtime, "DD/MM/YYYY hh:mm:ss")
-                .utcOffset(330)
-                .toString()
+              lastUpdated: momenttz(
+                state.lastupdatedtime,
+                "DD/MM/YYYY hh:mm:ss",
+                "Asia/India"
+              ).toString()
             };
           } else {
             currentDataNew.statewise[stateCodeAndNameMap[state.state]] = {
@@ -104,9 +107,11 @@ const fetchStateWiseDataFromSource = () => {
               deaths: state.deaths,
               delta: state.delta,
               recovered: state.recovered || 0,
-              lastUpdated: moment(state.lastupdatedtime, "DD/MM/YYYY hh:mm:ss")
-                .utcOffset(330)
-                .toString()
+              lastUpdated: momenttz(
+                state.lastupdatedtime,
+                "DD/MM/YYYY hh:mm:ss",
+                "Asia/India"
+              ).toString()
             };
             max =
               parseInt(state.confirmed) > max ? parseInt(state.confirmed) : max;
@@ -122,7 +127,6 @@ const fetchStateWiseDataFromSource = () => {
           deceased: data.key_values[0].deceaseddelta,
           recovered: data.key_values[0].recovereddelta
         };
-        console.log(currentDataNew);
 
         // Very bad hack for now. Very very bad!
         let currentTested =
