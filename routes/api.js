@@ -91,10 +91,9 @@ const fetchStateWiseDataFromSource = () => {
               confirmed: state.confirmed,
               deaths: state.deaths,
               recovered: state.recovered || 0,
-              lastUpdated: moment(
-                state.lastupdatedtime,
-                "DD/MM/YYYY hh:mm:ss"
-              ).toDate()
+              lastUpdated: moment(state.lastupdatedtime, "DD/MM/YYYY hh:mm:ss")
+                .utcOffset(330)
+                .toString()
             };
           } else {
             currentDataNew.statewise[stateCodeAndNameMap[state.state]] = {
@@ -105,10 +104,9 @@ const fetchStateWiseDataFromSource = () => {
               deaths: state.deaths,
               delta: state.delta,
               recovered: state.recovered || 0,
-              lastUpdated: moment(
-                state.lastupdatedtime,
-                "DD/MM/YYYY hh:mm:ss"
-              ).toDate()
+              lastUpdated: moment(state.lastupdatedtime, "DD/MM/YYYY hh:mm:ss")
+                .utcOffset(330)
+                .toString()
             };
             max =
               parseInt(state.confirmed) > max ? parseInt(state.confirmed) : max;
@@ -124,6 +122,7 @@ const fetchStateWiseDataFromSource = () => {
           deceased: data.key_values[0].deceaseddelta,
           recovered: data.key_values[0].recovereddelta
         };
+        console.log(currentDataNew);
 
         // Very bad hack for now. Very very bad!
         let currentTested =
