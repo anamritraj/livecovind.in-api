@@ -96,9 +96,7 @@ const fetchStateWiseDataFromSource = () => {
                 state.lastupdatedtime,
                 "DD/MM/YYYY hh:mm:ss",
                 "Asia/Calcutta"
-              ).toLocaleString("en-US", {
-                timeZone: "Asia/Calcutta"
-              })
+              ).format()
             };
           } else {
             currentDataNew.statewise[stateCodeAndNameMap[state.state]] = {
@@ -113,9 +111,7 @@ const fetchStateWiseDataFromSource = () => {
                 state.lastupdatedtime,
                 "DD/MM/YYYY hh:mm:ss",
                 "Asia/Calcutta"
-              ).toLocaleString("en-US", {
-                timeZone: "Asia/Calcutta"
-              })
+              ).format()
             };
             max =
               parseInt(state.confirmed) > max ? parseInt(state.confirmed) : max;
