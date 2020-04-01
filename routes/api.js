@@ -158,10 +158,16 @@ const fetchStateWiseDataFromSource = () => {
         tested = data.tested;
 
         // Assign India timeseries data
-        casesTimeSeries = casesTimeSeries.map(point => ({
-          ...point,
-          date: moment(point.date + "2020", "DD MMMM YYYY").format("YYYY-MM-DD")
-        }));
+        casesTimeSeries = casesTimeSeries.map(point => {
+          delete point.death;
+          delete point.rec;
+          return {
+            ...point,
+            date: moment(point.date + "2020", "DD MMMM YYYY").format(
+              "YYYY-MM-DD"
+            )
+          };
+        });
 
         indiaTimeSeries = casesTimeSeries;
       } else {
