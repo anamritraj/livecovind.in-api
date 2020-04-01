@@ -91,7 +91,10 @@ const fetchStateWiseDataFromSource = () => {
               confirmed: state.confirmed,
               deaths: state.deaths,
               recovered: state.recovered || 0,
-              lastUpdated: Date.now()
+              lastUpdated: moment(
+                state.lastupdatedtime,
+                "DD/MM/YYYY hh:mm:ss"
+              ).toDate()
             };
           } else {
             currentDataNew.statewise[stateCodeAndNameMap[state.state]] = {
@@ -101,7 +104,11 @@ const fetchStateWiseDataFromSource = () => {
               confirmed: state.confirmed,
               deaths: state.deaths,
               delta: state.delta,
-              recovered: state.recovered || 0
+              recovered: state.recovered || 0,
+              lastUpdated: moment(
+                state.lastupdatedtime,
+                "DD/MM/YYYY hh:mm:ss"
+              ).toDate()
             };
             max =
               parseInt(state.confirmed) > max ? parseInt(state.confirmed) : max;
@@ -142,7 +149,6 @@ const fetchStateWiseDataFromSource = () => {
           data.tested[data.tested.length - (currentTestedIndex - 1)];
         currentDataNew.tested.delta = currentTested - previousTested;
         currentData = currentDataNew;
-
         // Assign Tested
         tested = data.tested;
 
@@ -310,7 +316,6 @@ const fetchDistrictWiseData = () => {
             delete response.data[key].districtData[districtName][
               "lastupdatedtime"
             ];
-            response.data[key].districtData[districtName].confirmedDelta = 0;
           });
           stateDistrictDataNew[stateCodeAndNameMap[key]] = {};
           stateDistrictDataNew[stateCodeAndNameMap[key]].name = key;
