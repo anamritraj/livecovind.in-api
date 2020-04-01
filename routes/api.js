@@ -152,7 +152,6 @@ const fetchStateWiseDataFromSource = () => {
           data.tested[data.tested.length - (currentTestedIndex - 1)];
         currentDataNew.tested.delta = currentTested - previousTested;
         currentData = currentDataNew;
-        console.log(currentDataNew);
 
         // Assign Tested
         tested = data.tested;
