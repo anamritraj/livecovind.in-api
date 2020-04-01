@@ -95,8 +95,10 @@ const fetchStateWiseDataFromSource = () => {
               lastUpdated: momenttz(
                 state.lastupdatedtime,
                 "DD/MM/YYYY hh:mm:ss",
-                "Asia/India"
-              ).toString()
+                "Asia/Calcutta"
+              ).toLocaleString("en-US", {
+                timeZone: "Asia/Calcutta"
+              })
             };
           } else {
             currentDataNew.statewise[stateCodeAndNameMap[state.state]] = {
@@ -110,8 +112,10 @@ const fetchStateWiseDataFromSource = () => {
               lastUpdated: momenttz(
                 state.lastupdatedtime,
                 "DD/MM/YYYY hh:mm:ss",
-                "Asia/India"
-              ).toString()
+                "Asia/Calcutta"
+              ).toLocaleString("en-US", {
+                timeZone: "Asia/Calcutta"
+              })
             };
             max =
               parseInt(state.confirmed) > max ? parseInt(state.confirmed) : max;
@@ -152,6 +156,8 @@ const fetchStateWiseDataFromSource = () => {
           data.tested[data.tested.length - (currentTestedIndex - 1)];
         currentDataNew.tested.delta = currentTested - previousTested;
         currentData = currentDataNew;
+        console.log(currentDataNew);
+
         // Assign Tested
         tested = data.tested;
 
