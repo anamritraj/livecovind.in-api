@@ -160,7 +160,7 @@ const saveDataJsonIntoFireBase = (data) => {
     console.log("Data is not present inside RAM, getting it from Firebase")
     // Get the data from firebase and store it in the global variable. prevDaysStateWiseDataStore[dayKey]
     // eslint-disable-next-line no-undef
-    getDataFromFirebase(process.env.STATE_WISE_TIME_SERIES_COLLECTION_NAME, prevDayFileName).then((doc) => {
+    getDataFromFirebase('stateWiseTimeSeries', prevDayFileName).then((doc) => {
       prevDayData = doc;
       prevDaysStateWiseDataStore[prevDayFileName] = doc;
       saveStateWiseTimeSeriesDataIntoFirebase(prevDayData, currentDayFileName, stateWiseRaw);
@@ -196,7 +196,7 @@ const saveStateWiseTimeSeriesDataIntoFirebase = (prevDayData, currentDayFileName
     }
   });
   // eslint-disable-next-line no-undef
-  saveDataToFireBase(process.env.STATE_WISE_TIME_SERIES_COLLECTION_NAME, currentDayFileName, stateWiseFinal);
+  saveDataToFireBase('stateWiseTimeSeries', currentDayFileName, stateWiseFinal);
 }
 
 

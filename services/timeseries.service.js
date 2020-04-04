@@ -6,7 +6,7 @@ let raceChartData = {};
 
 const updateIndianStatesTimeSeriesData = () => {
   // eslint-disable-next-line no-undef
-  getAllDataFromFirebase(process.env.STATE_WISE_TIME_SERIES_COLLECTION_NAME).then((data) => {
+  getAllDataFromFirebase('stateWiseTimeSeries').then((data) => {
     indianStateTimeseriesData = data;
     // Time to prepare data for raceCharts
     const barDataNew = [];
