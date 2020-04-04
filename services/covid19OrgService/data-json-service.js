@@ -158,7 +158,8 @@ const saveDataJsonIntoFireBase = (data) => {
   // We only want to get the data from firestore if the data is not present in the prevDaysStateWiseDataStore[dayKey]
   if (!prevDaysStateWiseDataStore[prevDayFileName]) {
     // Get the data from firebase and store it in the global variable. prevDaysStateWiseDataStore[dayKey]
-    getDataFromFirebase("stateWiseTimeSeries", prevDayFileName).then((doc) => {
+    // eslint-disable-next-line no-undef
+    getDataFromFirebase(process.env.STATE_WISE_TIME_SERIES_COLLECTION_NAME, prevDayFileName).then((doc) => {
       prevDayData = doc;
       prevDaysStateWiseDataStore[prevDayFileName] = doc;
       saveStateWiseTimeSeriesDataIntoFirebase(prevDayData, currentDayFileName, stateWiseRaw);
@@ -193,7 +194,8 @@ const saveStateWiseTimeSeriesDataIntoFirebase = (prevDayData, currentDayFileName
       console.log("There was an error while parsing calculating delta from new and old statewise data");
     }
   });
-  saveDataToFireBase("stateWiseTimeSeries", currentDayFileName, stateWiseFinal);
+  // eslint-disable-next-line no-undef
+  saveDataToFireBase(process.env.STATE_WISE_TIME_SERIES_COLLECTION_NAME, currentDayFileName, stateWiseFinal);
 }
 
 
