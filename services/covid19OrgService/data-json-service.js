@@ -153,10 +153,11 @@ const saveDataJsonIntoFireBase = (data) => {
   const prevDataTimeStamp = moment(currentDataTimeStamp).subtract(1, "d");
   const prevDayFileName = prevDataTimeStamp.format("DD-MM-YYYY");
   const currentDayFileName = currentDataTimeStamp.format("DD-MM-YYYY");
-
+  console.log("\nTIMESTAMPS: ", { currentDataTimeStamp }, { prevDataTimeStamp }, { currentDayFileName }, { prevDayFileName }, "\n");
   let prevDayData;
-  // We only want to get the data from firestore if the data is not present in the prevDaysStateWiseDataStore[dayKey]
+  // We only want to get the data from firebase if the data is not present in the prevDaysStateWiseDataStore[dayKey]
   if (!prevDaysStateWiseDataStore[prevDayFileName]) {
+    console.log("Data is not present inside RAM, getting it from Firebase")
     // Get the data from firebase and store it in the global variable. prevDaysStateWiseDataStore[dayKey]
     // eslint-disable-next-line no-undef
     getDataFromFirebase(process.env.STATE_WISE_TIME_SERIES_COLLECTION_NAME, prevDayFileName).then((doc) => {
