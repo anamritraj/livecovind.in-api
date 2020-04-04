@@ -27,8 +27,26 @@ const getDataFromFirebase = (collection, key) => {
 
 }
 
+const getAllDataFromFirebase = (collection) => {
+  const collectionRef = db.collection(collection);
+
+  return new Promise((resolve, reject) => {
+    collectionRef.get().then(snapshot => {
+      let finalResult = {};
+      snapshot.forEach(doc => {
+        finalResult[doc.id] = doc.data();
+      });
+      resolve(finalResult)
+    }).catch(err => {
+      reject({ reason: err })
+    })
+  })
+
+}
+
 
 module.exports = {
   saveDataToFireBase,
-  getDataFromFirebase
+  getDataFromFirebase,
+  getAllDataFromFirebase
 }

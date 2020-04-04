@@ -213,7 +213,7 @@ function calldataService() {
 }
 // This handles the calling of services over and over again
 calldataService();
-setInterval(calldataService, 1000 * 60 * 4);
+setInterval(calldataService, 1000 * 60 * 3);
 
 // Getters exposed to the outer world
 const getCurrentData = () => {

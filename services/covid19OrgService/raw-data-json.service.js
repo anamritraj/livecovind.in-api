@@ -109,7 +109,7 @@ function callRawDataService() {
 }
 
 callRawDataService();
-setInterval(callRawDataService, 1000 * 60 * 7);
+setInterval(callRawDataService, 1000 * 60 * 5);
 
 const getRawDataStats = () => {
   return {

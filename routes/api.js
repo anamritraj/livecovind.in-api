@@ -1,5 +1,6 @@
 var express = require("express");
 var router = express.Router();
+const { getStatesTimeSeriesData, getRaceChartData } = require('../services/timeseries.service');
 const covid19OrgdataJsonService = require("../services/covid19OrgService/data-json-service");
 const covid19OrgStateDistrictWiseJsonService = require('../services/covid19OrgService/state-district-wise-json.service');
 const covid19OrgRawDataJsonService = require('../services/covid19OrgService/raw-data-json.service');
@@ -23,7 +24,13 @@ const covid19OrgRawDataJsonService = require('../services/covid19OrgService/raw-
 //       console.log("There was an error in the API");
 //     });
 // };
+router.get("/states/timeseries", function (req, res) {
+  res.json(getStatesTimeSeriesData());
+})
 
+router.get("/states/racechart", function (req, res) {
+  res.json(getRaceChartData());
+})
 
 router.get("/state", function (req, res) {
   res.json(covid19OrgdataJsonService.getCurrentData());
