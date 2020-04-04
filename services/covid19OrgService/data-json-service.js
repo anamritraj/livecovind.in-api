@@ -153,7 +153,7 @@ const saveDataJsonIntoFireBase = (data) => {
   const prevDataTimeStamp = moment(currentDataTimeStamp).subtract(1, "d");
   const prevDayFileName = prevDataTimeStamp.format("DD-MM-YYYY");
   const currentDayFileName = currentDataTimeStamp.format("DD-MM-YYYY");
-  console.log("\nTIMESTAMPS: ", { currentDataTimeStamp }, { prevDataTimeStamp }, { currentDayFileName }, { prevDayFileName }, "\n");
+  console.log("\nTIMESTAMPS: ", { currentDataTimeStamp: currentDataTimeStamp.format() }, { prevDataTimeStamp: prevDataTimeStamp.format() }, { currentDayFileName }, { prevDayFileName }, "\n");
   let prevDayData;
   // We only want to get the data from firebase if the data is not present in the prevDaysStateWiseDataStore[dayKey]
   if (!prevDaysStateWiseDataStore[prevDayFileName]) {
