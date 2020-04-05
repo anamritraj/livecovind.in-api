@@ -49,6 +49,12 @@ const fetchStateWiseDataFromSource = () => {
                   "Asia/Calcutta"
                 ).format()
               };
+              // TODO: Remove this!
+              currentDataNew.dayChange = {
+                confirmed: state.deltaconfirmed,
+                recovered: state.deltarecovered,
+                deceased: state.deltadeaths
+              }
             } else {
               currentDataNew.statewise[stateCodeAndNameMap[state.state]] = {
                 code: stateCodeAndNameMap[state.state],
@@ -56,7 +62,12 @@ const fetchStateWiseDataFromSource = () => {
                 active: state.active,
                 confirmed: state.confirmed,
                 deaths: state.deaths,
-                delta: state.delta,
+                delta: {
+                  confirmed: parseInt(state.deltaconfirmed),
+                  active: parseInt(state.deltaactive),
+                  recovered: parseInt(state.deltarecovered),
+                  deaths: parseInt(state.deltadeaths)
+                },
                 recovered: state.recovered || 0,
                 lastUpdated: momenttz(
                   state.lastupdatedtime,
@@ -77,11 +88,6 @@ const fetchStateWiseDataFromSource = () => {
           // Assign Current Data
           currentDataNew.total.max = max;
           currentDataNew.total.min = min;
-          currentDataNew.dayChange = {
-            confirmed: data.key_values[0].confirmeddelta,
-            deceased: data.key_values[0].deceaseddelta,
-            recovered: data.key_values[0].recovereddelta
-          };
 
           // Very bad hack for now. Very very bad!
           let currentTested =
@@ -144,12 +150,20 @@ const fetchStateWiseDataFromSource = () => {
 const saveDataJsonIntoFireBase = (data) => {
   console.log("Saving data into firebase database...")
   const stateWiseRaw = data.statewise;
+
+  let currentDataTimeStamp;
+
+  stateWiseRaw.forEach(state => {
+    if (state.state === "Total") {
+      currentDataTimeStamp = momenttz(
+        state.lastupdatedtime,
+        "DD/MM/YYYY hh:mm:ss",
+        "Asia/Calcutta"
+      );
+    }
+  })
+
   // Get the time of data generation
-  const currentDataTimeStamp = momenttz(
-    data.key_values[0].lastupdatedtime,
-    "DD/MM/YYYY hh:mm:ss",
-    "Asia/Calcutta"
-  );
   const prevDataTimeStamp = moment(currentDataTimeStamp).subtract(1, "d");
   const prevDayFileName = prevDataTimeStamp.format("DD-MM-YYYY");
   const currentDayFileName = currentDataTimeStamp.format("DD-MM-YYYY");
