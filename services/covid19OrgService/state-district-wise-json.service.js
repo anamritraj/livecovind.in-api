@@ -57,7 +57,7 @@ const sendNotifications = () => {
     
     notificationObject.payload.keys.forEach((key) => {
       // Check if the object has changed
-      if (districtNotificationsDiff[key].current - districtNotificationsDiff[key].current >= 0){
+      if (districtNotificationsDiff[key].current - districtNotificationsDiff[key].current > 0){
         changedDistricts.push(districtNotificationsDiff[key].name);
       }
     });
