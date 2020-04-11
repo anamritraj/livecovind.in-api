@@ -8,6 +8,20 @@ const saveDataToFireBase = (collection, key, data) => {
   })
 }
 
+const updateDataInFireBase = (collection, key, data) => {
+  let docRef = db.collection(collection).doc(key);
+
+  return docRef.update(data).then(() => {
+    console.log("Added data in the database for ", key);
+  }).catch((err) => {
+    console.log(err);
+  })
+}
+
+const deleteDocumentInFireBase = (collection, key) => {
+  db.collection(collection).doc(key).delete();
+}
+
 const getDataFromFirebase = (collection, key) => {
   const collectionRef = db.collection(collection).doc(key);
 
@@ -25,6 +39,20 @@ const getDataFromFirebase = (collection, key) => {
     })
   })
 
+}
+
+const batchProcessData = (collection, elements) => {
+  let batch = db.batch();
+
+  elements.forEach(element => {
+    let docRef = db.collection(collection).doc(element.key);
+    delete element.data.modified;
+    batch.set(docRef, element.data);
+  })
+
+  return batch.commit().then(function () {
+    console.log("Processed the batch elements writing");
+  });
 }
 
 const getAllDataFromFirebase = (collection) => {
@@ -48,5 +76,8 @@ const getAllDataFromFirebase = (collection) => {
 module.exports = {
   saveDataToFireBase,
   getDataFromFirebase,
-  getAllDataFromFirebase
+  deleteDocumentInFireBase,
+  getAllDataFromFirebase,
+  updateDataInFireBase,
+  batchProcessData
 }

@@ -1,4 +1,6 @@
+/*global process*/
 const axios = require("axios");
+const rawDataServiceTimeInterval = parseInt(process.env.RAW_DATA_TIME_INTERVAL_MINS);
 
 let ageBracketsNew = {
   "0-7": 0,
@@ -20,7 +22,6 @@ const fetchRawDataFromSource = () => {
     axios
       .get("https://api.covid19india.org/raw_data.json")
       .then(response => {
-        console.log("fetchRawDataFromSource : Got data from source..")
         if (response.status === 200) {
           const raw_data = response.data.raw_data;
           let hospitalizedNew = {};
@@ -109,7 +110,7 @@ function callRawDataService() {
 }
 
 callRawDataService();
-setInterval(callRawDataService, 1000 * 60 * 5);
+setInterval(callRawDataService, 1000 * 60 * rawDataServiceTimeInterval);
 
 const getRawDataStats = () => {
   return {

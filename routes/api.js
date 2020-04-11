@@ -4,7 +4,7 @@ const { getStatesTimeSeriesData, getRaceChartData } = require('../services/times
 const covid19OrgdataJsonService = require("../services/covid19OrgService/data-json-service");
 const covid19OrgStateDistrictWiseJsonService = require('../services/covid19OrgService/state-district-wise-json.service');
 const covid19OrgRawDataJsonService = require('../services/covid19OrgService/raw-data-json.service');
-
+const { saveNotificationEndpointToFireBase, removeNotificationEndpointToFireBase} = require('../services/notifications.service'); 
 // const fetchLiveBlogDataFromSource = index => {
 //   console.log("Fetching data from backend");
 //   index = index + 1;
@@ -51,5 +51,17 @@ router.get("/tested", function (req, res) {
 router.get("/stats", function (req, res) {
   res.json(covid19OrgRawDataJsonService.getRawDataStats());
 });
+
+router.post("/notifications/subscribe", function (req, res) {
+  const subscription = req.body
+  saveNotificationEndpointToFireBase(subscription);
+  res.status(200).json({ 'success': true })
+})
+
+router.post("/notifications/unsubscribe", function (req, res) {
+  const subscription = req.body
+  removeNotificationEndpointToFireBase(subscription);
+  res.status(200).json({ 'success': true })
+})
 
 module.exports = router;

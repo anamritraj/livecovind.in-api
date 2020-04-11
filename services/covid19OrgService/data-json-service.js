@@ -1,8 +1,10 @@
+/*global process*/
 const axios = require("axios");
 const moment = require("moment");
 const momenttz = require("moment-timezone");
 const { getDataFromFirebase, saveDataToFireBase } = require("../firebase-service");
 const stateCodeAndNameMap = require('../stateAndNameMapService').stateCodeAndNameMap;
+const dataServiceTimeInterval = parseInt(process.env.DATA_JSON_TIME_INTERVAL_MINS);
 
 let indiaTimeSeriesGlobal = {};
 let testedGlobal = {};
@@ -21,7 +23,6 @@ const fetchStateWiseDataFromSource = () => {
     axios
       .get("https://api.covid19india.org/data.json")
       .then(response => {
-        console.log("fetchStateWiseDataFromSource: Got data from source..")
         if (response.status === 200) {
           let data = response.data;
           const stateData = data.statewise;
@@ -145,12 +146,10 @@ const fetchStateWiseDataFromSource = () => {
   });
 };
 
-
 // This function saves the data into the firebase database
 const saveDataJsonIntoFireBase = (data) => {
   console.log("Saving data into firebase database...")
   const stateWiseRaw = data.statewise;
-
   let currentDataTimeStamp;
 
   stateWiseRaw.forEach(state => {
@@ -167,11 +166,10 @@ const saveDataJsonIntoFireBase = (data) => {
   const prevDataTimeStamp = moment(currentDataTimeStamp).subtract(1, "d");
   const prevDayFileName = prevDataTimeStamp.format("DD-MM-YYYY");
   const currentDayFileName = currentDataTimeStamp.format("DD-MM-YYYY");
-  console.log("\nTIMESTAMPS: ", { currentDataTimeStamp: currentDataTimeStamp.format() }, { prevDataTimeStamp: prevDataTimeStamp.format() }, { currentDayFileName }, { prevDayFileName }, "\n");
   let prevDayData;
   // We only want to get the data from firebase if the data is not present in the prevDaysStateWiseDataStore[dayKey]
   if (!prevDaysStateWiseDataStore[prevDayFileName]) {
-    console.log("Data is not present inside RAM, getting it from Firebase")
+    console.log("Data is not present inMemory, getting it from Firebase...")
     // Get the data from firebase and store it in the global variable. prevDaysStateWiseDataStore[dayKey]
     // eslint-disable-next-line no-undef
     getDataFromFirebase('stateWiseTimeSeries', prevDayFileName).then((doc) => {
@@ -213,11 +211,10 @@ const saveStateWiseTimeSeriesDataIntoFirebase = (prevDayData, currentDayFileName
   saveDataToFireBase('stateWiseTimeSeries', currentDayFileName, stateWiseFinal);
 }
 
-
 // This intiates the call to the backend API.
 function calldataService() {
   fetchStateWiseDataFromSource().then(({ indiaTimeSeries, tested, currentData }) => {
-    console.log("Setting up in the global values");
+    console.log("fetchStateWiseDataFromSource : Setting up the global values");
     indiaTimeSeriesGlobal = indiaTimeSeries;
     testedGlobal = tested;
     currentDataGlobal = currentData;
@@ -227,7 +224,7 @@ function calldataService() {
 }
 // This handles the calling of services over and over again
 calldataService();
-setInterval(calldataService, 1000 * 60 * 3);
+setInterval(calldataService, 1000 * 60 * dataServiceTimeInterval);
 
 // Getters exposed to the outer world
 const getCurrentData = () => {

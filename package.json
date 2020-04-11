@@ -17,7 +17,8 @@
     "moment": "^2.24.0",
     "moment-timezone": "^0.5.28",
     "morgan": "~1.9.1",
-    "pdf-parse": "^1.1.1"
+    "pdf-parse": "^1.1.1",
+    "web-push": "^3.4.3"
   },
   "devDependencies": {
     "eslint": "^6.8.0"
