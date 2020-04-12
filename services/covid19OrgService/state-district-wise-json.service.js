@@ -104,7 +104,9 @@ const calculateDiff = () => {
 function callStateDistrictService() {
   fetchStateDistrictWiseDataFromSource().then(({ stateDistrictData }) => {
     stateDistrictDataGlobal = stateDistrictData;
-    calculateDiff();
+    setTimeout(() => {
+      calculateDiff();
+    }, 0)
     setTimeout(() => {
       sendNotifications();
     }, 0)
