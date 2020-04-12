@@ -90,7 +90,7 @@ const calculateDiff = () => {
   for (let key in stateDistrictDataGlobal) {
     for (let districtName in stateDistrictDataGlobal[key].districts) {
       districtNotificationsDiffNew[key + "_" + districtName] = {
-        prev: isInitialized ? districtNotificationsDiff[key + "_" + districtName].current : stateDistrictDataGlobal[key].districts[districtName].confirmed,
+        prev: isInitialized && districtNotificationsDiff[key + "_" + districtName] ? districtNotificationsDiff[key + "_" + districtName].current : stateDistrictDataGlobal[key].districts[districtName].confirmed,
         current: stateDistrictDataGlobal[key].districts[districtName].confirmed,
         name: districtName,
         stateName: stateDistrictDataGlobal[key].name
