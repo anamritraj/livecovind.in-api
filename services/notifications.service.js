@@ -3,7 +3,7 @@ const { getAllDataFromFirebase, batchProcessData, deleteDocumentInFireBase } = r
 const crypto = require('crypto');
 const ttl = parseInt(process.env.NOTIFICATIONS_CACHE_WRITE_BACK_INTERVAL_SECONDS);
 const collectionName = process.env.NOTIFICATIONS_COLLECTION_NAME;
-
+const moment = require('moment');
 
 const getHash = (key) => {
   const hash = crypto.createHash('sha512');
@@ -24,6 +24,7 @@ const NotificationCache = (ttl) =>{
           data : data[key]
         };
         delete copyToBeSaved.data.modified;
+        copyToBeSaved.data.lastModified = moment().format();
         dataToWrite.push(copyToBeSaved);
         data[key].modified = false;
       }
