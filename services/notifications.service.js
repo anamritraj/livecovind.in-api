@@ -82,7 +82,14 @@ const NotificationCache = (ttl) =>{
     },
     removeNotificationPayload: (key, subscriptionToBeRemoved) => {
       const newObject = data[key];
-      newObject.payload.keys = newObject.payload.keys.filter((el) => el != subscriptionToBeRemoved.payload.key)
+      if(!newObject){
+        return;
+      }
+
+      if (newObject.payload)
+        newObject.payload.keys = newObject.payload.keys.filter((el) => el != subscriptionToBeRemoved.payload.key)
+      else
+        newObject.payload.keys = [];
       newObject.modified = true;
       data[key] = newObject;
       // console.log(data);
