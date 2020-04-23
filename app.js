@@ -15,7 +15,7 @@ app.use(express.urlencoded({ extended: false }));
 
 function checkOrigin(origin) {
   console.log("origin: ", (origin ? origin : "DIRECT API CALL"));
-  if (!origin || origin.includes("livecovid.in") > 0 || origin.includes("localhost") || origin.includes("netlify.app")) {
+  if (!origin || origin.includes("livecovid.in") > 0 || origin.includes("localhost") || origin.includes("netlify")) {
     return true;
   } else {
     return false;

@@ -4,6 +4,7 @@ const { getStatesTimeSeriesData, getRaceChartData } = require('../services/times
 const covid19OrgdataJsonService = require("../services/covid19OrgService/data-json-service");
 const covid19OrgStateDistrictWiseJsonService = require('../services/covid19OrgService/state-district-wise-json.service');
 const covid19OrgRawDataJsonService = require('../services/covid19OrgService/raw-data-json.service');
+const covid19OrgStateWiseTestingService = require('../services/covid19OrgService/statewise-testing.service');
 const { saveNotificationEndpointToFireBase, removeNotificationEndpointToFireBase} = require('../services/notifications.service'); 
 // const fetchLiveBlogDataFromSource = index => {
 //   console.log("Fetching data from backend");
@@ -31,6 +32,10 @@ router.get("/states/timeseries", function (req, res) {
 router.get("/states/racechart", function (req, res) {
   res.json(getRaceChartData());
 })
+
+router.get("/states/testing", function (req, res) {
+  res.json(covid19OrgStateWiseTestingService.getStateWiseTesting());
+});
 
 router.get("/state", function (req, res) {
   res.json(covid19OrgdataJsonService.getCurrentData());
