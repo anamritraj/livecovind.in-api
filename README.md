@@ -20,6 +20,15 @@ PORT=4444
   - `npm i nodemon -g`
   - Then run, `nodemon ./bin/www`
   - This will reload the server everytime you make code changes. Sweet!
+  
+## Generate vapid keys
+- You will also need to generate your own vapid keys to test notifications on your browser. 
+- Use this tool to generate this key and replace it in `.env` file https://www.npmjs.com/package/web-push#command-line
+
+## Setup a firebase account
+- You need to have a firebase account and a project created in the firebase account to work on this repo.
+- Head over to http://firebase.google.com/ to create a free account. Make sure to generate `firebase.json` file to give access to your firebase account from the nodejs application.
+- Use this link to generate your json file and save it as `firebase.json` in root directory. https://firebase.google.com/docs/admin/setup#initialize-sdk
 
 ## Front-end application
 The companion front-end application is in this repo, https://github.com/anamritraj/livecovid.in-webapp. Feel free to fork and contribute! 
