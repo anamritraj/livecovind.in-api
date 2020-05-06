@@ -20,7 +20,6 @@ const getMaxObjectForDay = (data) => {
       maxValues.recovered = Math.max(data[stateKey].value.recovered, maxValues.recovered);
     }
   })
-  console.log(maxValues);
   return maxValues;
 }
 const updateIndianStatesTimeSeriesData = () => {

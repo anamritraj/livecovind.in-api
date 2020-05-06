@@ -103,7 +103,6 @@ function callRawDataService() {
     ageBracketsGlobal = ageBrackets;
     hospitalizedGlobal = hospitalized;
     genderGlobal = gender;
-
   }).catch(err => {
     console.log(err)
   });

@@ -6,6 +6,7 @@ const covid19OrgStateDistrictWiseJsonService = require('../services/covid19OrgSe
 const covid19OrgRawDataJsonService = require('../services/covid19OrgService/raw-data-json.service');
 const covid19OrgStateWiseTestingService = require('../services/covid19OrgService/statewise-testing.service');
 const { saveNotificationEndpointToFireBase, removeNotificationEndpointToFireBase} = require('../services/notifications.service'); 
+const { getStateDistrictZonesDataGlobal } = require('../services/covid19OrgService/state-district-zones.service');
 // const fetchLiveBlogDataFromSource = index => {
 //   console.log("Fetching data from backend");
 //   index = index + 1;
@@ -25,6 +26,10 @@ const { saveNotificationEndpointToFireBase, removeNotificationEndpointToFireBase
 //       console.log("There was an error in the API");
 //     });
 // };
+router.get("/states/zones", function (req, res) {
+  res.json(getStateDistrictZonesDataGlobal());
+})
+
 router.get("/states/timeseries", function (req, res) {
   res.json(getStatesTimeSeriesData());
 })

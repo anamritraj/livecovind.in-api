@@ -35,7 +35,9 @@ const stateCodeAndNameMap = {
   Nagaland: "nl",
   Sikkim: "sk",
   "Dadra and Nagar Haveli": "dn",
+  "Dadra and Nagar Haveli and Daman and Diu": "dn",
   "Daman and Diu": "dd",
+  "Daman And Diu": "dd",
   Lakshadweep: "ld",
   Unknown: "unknown"
 };

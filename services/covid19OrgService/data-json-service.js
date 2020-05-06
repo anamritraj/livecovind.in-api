@@ -15,8 +15,6 @@ let currentDataGlobal = {
   tested: {}
 };
 
-const prevDaysStateWiseDataStore = {};
-
 const fetchStateWiseDataFromSource = () => {
   console.log("fetchStateWiseDataFromSource: Fetching Data from source...");
   return new Promise((resolve, reject) => {
@@ -162,32 +160,12 @@ const saveDataJsonIntoFireBase = (data) => {
     }
   })
 
-  // Get the time of data generation
-  const prevDataTimeStamp = moment(currentDataTimeStamp).subtract(1, "d");
-  const prevDayFileName = prevDataTimeStamp.format("DD-MM-YYYY");
-  const currentDayFileName = currentDataTimeStamp.format("DD-MM-YYYY");
-  let prevDayData;
-  // We only want to get the data from firebase if the data is not present in the prevDaysStateWiseDataStore[dayKey]
-  if (!prevDaysStateWiseDataStore[prevDayFileName]) {
-    console.log("Data is not present inMemory, getting it from Firebase...")
-    // Get the data from firebase and store it in the global variable. prevDaysStateWiseDataStore[dayKey]
-    // eslint-disable-next-line no-undef
-    getDataFromFirebase('stateWiseTimeSeries', prevDayFileName).then((doc) => {
-      prevDayData = doc;
-      prevDaysStateWiseDataStore[prevDayFileName] = doc;
-      saveStateWiseTimeSeriesDataIntoFirebase(prevDayData, currentDayFileName, stateWiseRaw);
-    }).catch(err => {
-      console.log(err);
-    })
-  } else {
-    prevDayData = prevDaysStateWiseDataStore[prevDayFileName];
-    saveStateWiseTimeSeriesDataIntoFirebase(prevDayData, currentDayFileName, stateWiseRaw);
-  }
+  const currentDayFileName = currentDataTimeStamp.format("DD-MM-YYYY");  
+  saveStateWiseTimeSeriesDataIntoFirebase(currentDayFileName, stateWiseRaw);
 }
 
-const saveStateWiseTimeSeriesDataIntoFirebase = (prevDayData, currentDayFileName, stateWiseRaw) => {
+const saveStateWiseTimeSeriesDataIntoFirebase = (currentDayFileName, stateWiseRaw) => {
   const stateWiseFinal = {};
-
   stateWiseRaw.forEach(stateData => {
     try {
       stateWiseFinal[stateCodeAndNameMap[stateData.state]] = {
@@ -197,14 +175,13 @@ const saveStateWiseTimeSeriesDataIntoFirebase = (prevDayData, currentDayFileName
         deaths: stateData.deaths,
         recovered: stateData.recovered,
         delta: {
-          active: stateData.active - prevDayData[stateCodeAndNameMap[stateData.state]].active,
-          confirmed: stateData.confirmed - prevDayData[stateCodeAndNameMap[stateData.state]].confirmed,
-          recovered: stateData.recovered - prevDayData[stateCodeAndNameMap[stateData.state]].recovered,
-          deaths: stateData.deaths - prevDayData[stateCodeAndNameMap[stateData.state]].deaths,
+          confirmed: stateData.deltaconfirmed,
+          recovered: stateData.deltarecovered,
+          deaths: stateData.deltadeaths,
         }
       };
     } catch (err) {
-      console.log("There was an error while parsing calculating delta from new and old statewise data");
+      console.log("There was an error while parsing calculating delta from new and old statewise data", err);
     }
   });
   // eslint-disable-next-line no-undef
