@@ -4,7 +4,9 @@ API for the website hosted at https://livecovid.in
 ## Warning
 I do not code like this in production, this is a side project and was hacked in less than 3-4 hours and after that I was too lazy to change it. :smile: If you want you can optimize it and I would be happy to approve the PR. 
 
-And yes there is no database for now. We don't need it as of now, but we might need one soon, I am planning to get one this weekend. Suggestions are welcome.
+~And yes there is no database for now. We don't need it as of now, but we might need one soon, I am planning to get one this weekend. Suggestions are welcome.~
+
+There is a firebase database added for saving data. It has its limits of 50k reads/20k writes per day. Hence, there is an in memory cache implemented to respect those limits. If you can, try using that cache to prevent unnecessary reads and writes. 
 
 ## Contribute
 - Clone this repo.
