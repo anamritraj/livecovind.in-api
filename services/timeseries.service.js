@@ -1,23 +1,46 @@
 const moment = require("moment");
+const population = require('./population.json');
 
 
 const { getAllDataFromFirebase } = require('./firebase-service');
 let indianStateTimeseriesData = {};
 let raceChartData = {};
 
+const calculateCasesPerMillion = (cases, stateKey) => {
+  const statePopulation = population[stateKey];
+  if (typeof cases === 'object') {
+    return {
+      ...cases,
+      activePerMillion: Math.round((Number(cases['active']) / statePopulation) * 1000000),
+      confirmedPerMillion: Math.round((Number(cases['confirmed']) / statePopulation) * 1000000),
+      deathsPerMillion: Math.round((Number(cases['deaths']) / statePopulation) * 1000000),
+      recoveredPerMillion: Math.round((Number(cases['recovered']) / statePopulation) * 1000000),
+    }
+  }
+  return Math.round((Number(cases) / statePopulation) * 1000000);
+}
+
 const getMaxObjectForDay = (data) => {
   const maxValues = {
-    deaths: -1,
-    active: -1,
-    confirmed: -1,
-    recovered: -1,
+    deaths: 0,
+    active: 0,
+    confirmed: 0,
+    recovered: 0,
+    deathsPerMillion: 0,
+    activePerMillion: 0,
+    confirmedPerMillion: 0,
+    recoveredPerMillion: 0
   }
   Object.keys(data).map(stateKey => {
-    if (stateKey !== 'total'){
+    if (stateKey !== 'total') {
       maxValues.deaths = Math.max(data[stateKey].value.deaths, maxValues.deaths);
       maxValues.confirmed = Math.max(data[stateKey].value.confirmed, maxValues.confirmed);
       maxValues.active = Math.max(data[stateKey].value.active, maxValues.active);
       maxValues.recovered = Math.max(data[stateKey].value.recovered, maxValues.recovered);
+      maxValues.deathsPerMillion = Math.max(calculateCasesPerMillion(data[stateKey].value.deaths, stateKey), maxValues.deathsPerMillion);
+      maxValues.confirmedPerMillion = Math.max(calculateCasesPerMillion(data[stateKey].value.confirmed, stateKey), maxValues.confirmedPerMillion);
+      maxValues.activePerMillion = Math.max(calculateCasesPerMillion(data[stateKey].value.active, stateKey), maxValues.activePerMillion);
+      maxValues.recoveredPerMillion = Math.max(calculateCasesPerMillion(data[stateKey].value.recovered, stateKey), maxValues.recoveredPerMillion);
     }
   })
   return maxValues;
@@ -43,7 +66,7 @@ const updateIndianStatesTimeSeriesData = () => {
       Object.keys(data[key]).forEach(stateKey => {
         timeSeriesDayData[stateKey] = {
           name: data[key][stateKey].name,
-          value: data[key][stateKey]
+          value: calculateCasesPerMillion(data[key][stateKey], stateKey)
         }
       })
 
