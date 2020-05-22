@@ -32,7 +32,7 @@ const getMaxObjectForDay = (data) => {
     recoveredPerMillion: 0
   }
   Object.keys(data).map(stateKey => {
-    if (stateKey !== 'total') {
+    if (stateKey !== "undefined" && stateKey !== 'total') {
       maxValues.deaths = Math.max(data[stateKey].value.deaths, maxValues.deaths);
       maxValues.confirmed = Math.max(data[stateKey].value.confirmed, maxValues.confirmed);
       maxValues.active = Math.max(data[stateKey].value.active, maxValues.active);
@@ -54,7 +54,6 @@ const updateIndianStatesTimeSeriesData = () => {
     Object.keys(data).forEach((key) => {
       // This is the data for one of the dates.
       // Need to convert it into {stateid, value}
-
       let raceDayData = Object.keys(data[key]).map(stateKey => {
         return {
           id: data[key][stateKey].name,
